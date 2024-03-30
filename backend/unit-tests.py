@@ -13,6 +13,12 @@ def client():
 
 @pytest.fixture
 def auth_headers(client):
+    """
+    Fixture to generate authentication headers for tests.
+
+    Returns:
+        dict: Authentication headers with access token.
+    """
     # Register a test user
     user_data = {"username": "testuser", "password": "testpassword"}
     client.post("/register", json=user_data)
@@ -26,7 +32,9 @@ def auth_headers(client):
 
 
 def test_get_tasks(client, auth_headers):
-    # Create a test task
+    """
+    Test the GET /tasks endpoint to retrieve tasks for an authenticated user.
+    """
     task_data = {
         "title": "Test Task",
         "description": "This is a test task",
@@ -46,6 +54,9 @@ def test_get_tasks(client, auth_headers):
 
 
 def test_create_task_valid_data(client, auth_headers):
+    """
+    Test the POST /tasks endpoint to create a new task with valid data.
+    """
     task_data = {
         "title": "Test Task",
         "description": "This is a test task",
@@ -58,6 +69,9 @@ def test_create_task_valid_data(client, auth_headers):
 
 
 def test_create_task_missing_title(client, auth_headers):
+    """
+    Test the POST /tasks endpoint with missing title field.
+    """
     task_data = {
         "description": "This is a test task",
         "status": "to do",
@@ -69,6 +83,9 @@ def test_create_task_missing_title(client, auth_headers):
 
 
 def test_create_task_invalid_status(client, auth_headers):
+    """
+    Test the POST /tasks endpoint with an invalid status value.
+    """
     task_data = {
         "title": "Test Task",
         "description": "This is a test task",
@@ -81,6 +98,9 @@ def test_create_task_invalid_status(client, auth_headers):
 
 
 def test_update_task_valid_data(client, auth_headers):
+    """
+    Test the PUT /tasks/<task_id> endpoint to update a task with valid data.
+    """
     # Create a test task
     task_data = {
         "title": "Test Task",
@@ -98,6 +118,9 @@ def test_update_task_valid_data(client, auth_headers):
 
 
 def test_update_task_invalid_status(client, auth_headers):
+    """
+    Test the PUT /tasks/<task_id> endpoint with an invalid status value.
+    """
     # Create a test task
     task_data = {
         "title": "Test Task",
@@ -115,6 +138,9 @@ def test_update_task_invalid_status(client, auth_headers):
 
 
 def test_delete_task(client, auth_headers):
+    """
+    Test the DELETE /tasks/<task_id> endpoint to delete a task.
+    """
     # Create a test task
     task_data = {
         "title": "Test Task",
@@ -131,6 +157,9 @@ def test_delete_task(client, auth_headers):
 
 
 def test_register_valid_data(client):
+    """
+    Test the POST /register endpoint with valid user data.
+    """
     user_data = {"username": "newuser", "password": "newpassword"}
     response = client.post("/register", json=user_data)
     assert response.status_code == 200
@@ -138,6 +167,9 @@ def test_register_valid_data(client):
 
 
 def test_login_valid_credentials(client):
+    """
+    Test the POST /login endpoint with valid user credentials.
+    """
     user_data = {"username": "testuser", "password": "testpassword"}
     response = client.post("/login", json=user_data)
     assert response.status_code == 200
@@ -146,6 +178,9 @@ def test_login_valid_credentials(client):
 
 
 def test_login_invalid_credentials(client):
+    """
+    Test the POST /login endpoint with invalid user credentials.
+    """
     user_data = {"username": "testuser", "password": "wrongpassword"}
     response = client.post("/login", json=user_data)
     assert response.status_code == 401
