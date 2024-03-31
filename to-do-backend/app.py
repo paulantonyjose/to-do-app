@@ -1,4 +1,5 @@
 from flask import Flask
+
 from flask_cors import CORS
 from flask_jwt_extended import (
     JWTManager,
@@ -8,7 +9,7 @@ from flask_jwt_extended import (
     create_refresh_token,
 )
 from flask import jsonify, request
-from pymongo import MongoClient
+
 from bson import ObjectId
 from datetime import datetime, timedelta
 import os
@@ -16,21 +17,26 @@ from dotenv import load_dotenv
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import bcrypt
-
+from pymongo import MongoClient
 
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
 
-app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
-app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 
 jwt = JWTManager(app)
 
 limiter = Limiter(key_func=get_remote_address)
 limiter.init_app(app)
+
+cors = CORS(app)
+
+
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
+
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 
 client = MongoClient(os.getenv("MONGODB_URI"))
@@ -71,7 +77,6 @@ def create_task():
     """
     user_id = get_jwt_identity()
     data = request.get_json()
-
     if "title" not in data or not data["title"].strip():
         raise ValueError("Title is required")
 
@@ -172,7 +177,6 @@ def login():
     """
     data = request.get_json()
     password = data["password"].encode("utf-8")
-
     user = db.users.find_one({"username": data["username"]})
     if user:
         hashed_password = user["password"]
